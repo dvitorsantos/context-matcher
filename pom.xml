@@ -9,7 +9,6 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>lsdi</groupId>
-    <artifactId>main</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>context-matcher</name>
     <description>context-matcher</description>
