@@ -8,16 +8,11 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Rule {
+public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uuid;
-    private String name;
-    private String description;
-    private String definition;
-    private String qos;
-    private String level;
-    private String target;
-    private String tagFilter;
-    private String inputEventTypes;
+    private Long nodeUuid;
+    private Long ruleUuid;
+    private Boolean status;
 }

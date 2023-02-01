@@ -5,6 +5,7 @@ import lsdi.DataTransferObjects.EventProcessNetworkRequest;
 import lsdi.DataTransferObjects.TaggedObjectResponse;
 import lsdi.Entities.Rule;
 import lsdi.Exceptions.MatchNotFoundException;
+import lsdi.Services.MatchService;
 import lsdi.Services.TaggerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class MatchController {
     @Autowired
     TaggerService taggerService;
 
+    @Autowired
+    MatchService matchService;
+
     @PostMapping("/findMatch")
     public String findMatch(@RequestBody EventProcessNetworkRequest epn) {
         try {
@@ -32,9 +36,9 @@ public class MatchController {
 
             //print list
             rules.forEach(rule -> {
-                    System.out.println("Rule: " + rule.toString());
-                    System.out.println("Matching Objects: " + Arrays.toString(matchingObjects.get(rule.getName())));
-                });
+                System.out.println("Rule: " + rule.toString());
+                System.out.println("Matching Objects: " + Arrays.toString(matchingObjects.get(rule.getName())));
+            });
 
             return Arrays.toString(matchingObjects.entrySet().toArray());
         } catch (MatchNotFoundException matchNotFoundException) {
