@@ -5,6 +5,9 @@ import lsdi.Repositories.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class MatchService {
     @Autowired
@@ -16,5 +19,9 @@ public class MatchService {
 
     public Match save(Match match) {
         return this.matchRepository.save(match);
+    }
+
+    public Optional<Match> findByNodeUuid(String nodeUuid) {
+        return this.matchRepository.findByNodeUuid(nodeUuid);
     }
 }

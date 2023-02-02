@@ -1,10 +1,8 @@
 version: '3.8'
 services:
-  ontext-matcher-database:
+  context-matcher-database:
     image: postgres:latest
     network_mode: bridge
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     container_name: context-matcher-database
     expose:
       - 5439
@@ -15,5 +13,3 @@ services:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=context-matcher
     restart: unless-stopped
-volumes:
-  postgres-data:

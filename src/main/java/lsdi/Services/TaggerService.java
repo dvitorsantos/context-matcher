@@ -3,6 +3,7 @@ package lsdi.Services;
 import lsdi.DataTransferObjects.TagExpressionRequest;
 import lsdi.DataTransferObjects.TaggedObjectResponse;
 
+import lsdi.Exceptions.TaggerException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,18 +16,26 @@ public class TaggerService {
         return this.url;
     }
 
-    public TaggedObjectResponse[] getTaggedObject() {
+    public TaggedObjectResponse[] getTaggedObject() throws TaggerException {
         String requestUrl = this.getUrl() + "/taggedObject";
 
-        return restTemplate.getForObject(requestUrl, TaggedObjectResponse[].class);
+        try {
+            return restTemplate.getForObject(requestUrl, TaggedObjectResponse[].class);
+        } catch (Exception e) {
+            throw new TaggerException("Tagger service error: " + e.getMessage());
+        }
     }
 
-    public TaggedObjectResponse[] getTaggedObjectByTagExpression(String tagExpression) {
+    public TaggedObjectResponse[] getTaggedObjectByTagExpression(String tagExpression) throws TaggerException {
         String requestUrl = this.getUrl() + "/taggedObject/tagExpression";
 
         TagExpressionRequest tagExpressionRequest = new TagExpressionRequest();
         tagExpressionRequest.setExpression(tagExpression);
 
-        return restTemplate.postForObject(requestUrl, tagExpressionRequest, TaggedObjectResponse[].class);
+        try {
+            return restTemplate.postForObject(requestUrl, tagExpressionRequest, TaggedObjectResponse[].class);
+        } catch (Exception e) {
+            throw new TaggerException("Tagger service error: " + e.getMessage());
+        }
     }
 }
