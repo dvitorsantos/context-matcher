@@ -13,6 +13,6 @@ public class TaggedObjectResponse {
     private String namespace;
 
     public Node toNode() {
-        return new Node(this.uuid, this.type, this.tags, this.namespace);
+        return new Node(this.uuid, this.type, this.namespace, this.tags);
     }
 }

@@ -7,20 +7,19 @@ import lombok.*;
 @RequiredArgsConstructor
 @Entity
 public class Match {
-    public Match(String nodeUuid, String ruleUuid, Boolean status) {
-        this.nodeUuid = nodeUuid;
-        this.ruleUuid = ruleUuid;
+    public Match(Rule rule, Node node, Boolean status) {
+        this.rule = rule;
+        this.node = node == null ? null : node.getUuid();
         this.status = status;
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uuid;
-    @Column(name = "node", columnDefinition = "VARCHAR(255)")
-    private String nodeUuid;
-
-    @Column(name = "rule", columnDefinition = "VARCHAR(255)")
-    private String ruleUuid;
-
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String uuid;
+    @ManyToOne
+    @JoinColumn(name = "rule_uuid")
+    private Rule rule;
+    @Column(name = "node_uuid")
+    private String node;
     @Column(name = "status")
     private Boolean status;
 }

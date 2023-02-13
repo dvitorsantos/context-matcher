@@ -7,6 +7,8 @@ import lsdi.Exceptions.TaggerException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Service
 public class TaggerService {
     private final String url = "http://localhost:8180/tagger";
@@ -16,11 +18,21 @@ public class TaggerService {
         return this.url;
     }
 
-    public TaggedObjectResponse[] getTaggedObject() throws TaggerException {
+    public TaggedObjectResponse[] getAllTaggedObjects() throws TaggerException {
         String requestUrl = this.getUrl() + "/taggedObject";
 
         try {
             return restTemplate.getForObject(requestUrl, TaggedObjectResponse[].class);
+        } catch (Exception e) {
+            throw new TaggerException("Tagger service error: " + e.getMessage());
+        }
+    }
+
+    public Optional<TaggedObjectResponse> getTaggedObjectByUuid(String uuid) throws TaggerException {
+        String requestUrl = this.getUrl() + "/taggedObject/" + uuid;
+
+        try {
+            return Optional.ofNullable(restTemplate.getForObject(requestUrl, TaggedObjectResponse.class));
         } catch (Exception e) {
             throw new TaggerException("Tagger service error: " + e.getMessage());
         }
