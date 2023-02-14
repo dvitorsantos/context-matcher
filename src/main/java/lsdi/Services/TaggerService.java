@@ -1,5 +1,6 @@
 package lsdi.Services;
 
+import lsdi.DataTransferObjects.NodeRequest;
 import lsdi.DataTransferObjects.TagExpressionRequest;
 import lsdi.DataTransferObjects.TaggedObjectResponse;
 
@@ -46,6 +47,16 @@ public class TaggerService {
 
         try {
             return restTemplate.postForObject(requestUrl, tagExpressionRequest, TaggedObjectResponse[].class);
+        } catch (Exception e) {
+            throw new TaggerException("Tagger service error: " + e.getMessage());
+        }
+    }
+
+    public void putTagsInObject(NodeRequest nodeRequest) throws TaggerException {
+        String requestUrl = this.getUrl() + "/taggedObject";
+
+        try {
+            restTemplate.put(requestUrl, nodeRequest, NodeRequest.class);
         } catch (Exception e) {
             throw new TaggerException("Tagger service error: " + e.getMessage());
         }

@@ -21,6 +21,14 @@ public class EventProcessNetworkService {
     public List<EventProcessNetwork> findAll() {
         return eventProcessNetworkRepository.findAll();
     }
+
+    public List<EventProcessNetwork> findAllByMatched(boolean matched) {
+        return eventProcessNetworkRepository.findAllByMatched(matched);
+    }
+
+    public List<EventProcessNetwork> findAllByNode(String nodeUuid) {
+        return eventProcessNetworkRepository.findAllByNode(nodeUuid);
+    }
     public EventProcessNetwork save(EventProcessNetwork eventProcessNetwork) {
         List<Rule> rules = eventProcessNetwork.getRules();
         rules.forEach(rule -> rule.setEventProcessNetwork(eventProcessNetwork));

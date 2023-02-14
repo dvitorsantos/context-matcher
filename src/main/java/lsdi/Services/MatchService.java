@@ -24,7 +24,15 @@ public class MatchService {
         return this.matchRepository.findAllByNode(nodeUuid);
     }
 
+    public List<Match> findAllByEventProcessNetworkUuid(String eventProcessNetworkUuid) {
+        return this.matchRepository.findAllByEventProcessNetworkUuid(eventProcessNetworkUuid);
+    }
+
     public List<Match> saveAll(List<Match> matches) {
         return this.matchRepository.saveAll(matches);
+    }
+
+    public void delete(Match match) {
+        this.matchRepository.delete(match);
     }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 public class NodeRequest {
     private String uuid;
     private String type;
-    private String namespace;
+    private String namespace = "default";
     private Map<String, String> tags;
 
     public Node toEntity() {
