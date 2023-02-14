@@ -1,4 +1,4 @@
-package lsdi.Services;
+package lsdi.Connector;
 
 import lsdi.DataTransferObjects.NodeRequest;
 import lsdi.DataTransferObjects.TagExpressionRequest;
@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 
 @Service
-public class TaggerService {
+public class TaggerConnector {
     private final String url = "http://localhost:8180/tagger";
     private final RestTemplate restTemplate = new RestTemplate();
 

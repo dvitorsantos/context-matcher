@@ -22,8 +22,8 @@ public class EventProcessNetworkResponse {
     private Boolean matched;
     private String qos;
     private Boolean atomic;
-    private List<RuleFlat> rules;
-    private List<MatchFlat> matches;
+    private List<RuleFlat> rules = new ArrayList<>();
+    private List<MatchFlat> matches = new ArrayList<>();
 
     public EventProcessNetworkResponse(String uuid, String commitId, String version, String startTime, String endTime, Boolean enabled, Boolean matched, String qos, Boolean atomic, List<Rule> rules) {
         this.uuid = uuid;

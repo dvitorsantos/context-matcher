@@ -1,11 +1,11 @@
-package lsdi.Services;
+package lsdi.Connector;
 
 import lsdi.Entities.Rule;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class CDPOService {
+public class CDPOConnector {
     private final String url = "http://localhost:8080/";
     private final RestTemplate restTemplate = new RestTemplate();
 
