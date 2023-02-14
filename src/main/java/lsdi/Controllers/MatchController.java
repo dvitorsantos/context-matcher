@@ -22,7 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("/match")
@@ -42,29 +44,24 @@ public class MatchController {
     @PostMapping("/find/nodes_to_epn")
     public ResponseEntity<Object> find(@RequestBody EventProcessNetworkRequest epn) {
         try {
-            List<Rule> rules = epn.getRules();
-            List<Match> matches = new ArrayList<>();
-
-            rules.forEach(rule -> {
-                Node node = findMatchingNodeToRule(rule); //throws MatchNotFoundException
-                matches.add(new Match(rule, node, true));
-            });
-
+            EventProcessNetworkResponse eventProcessNetworkResponse = new EventProcessNetworkResponse();
             EventProcessNetwork eventProcessNetwork = epn.toEntity();
-            eventProcessNetwork.setMatched(true);
-            EventProcessNetworkResponse eventProcessNetworkResponse =
-                    EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
-            List<Match> savedMatches = matchService.saveAll(matches);
-            eventProcessNetworkResponse.setMatches(savedMatches);
+            List<Match> matches = findMatchesToEventProcessNetwork(eventProcessNetwork);
 
-            return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponse);
-        } catch (MatchNotFoundException matchNotFoundException) {
-            EventProcessNetwork eventProcessNetwork = epn.toEntity();
-            eventProcessNetwork.setMatched(false);
-            EventProcessNetworkResponse eventProcessNetworkResponse =
-                EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eventProcessNetworkResponse);
+            if (!matches.isEmpty()) {
+                eventProcessNetwork.setMatched(true);
+                eventProcessNetworkResponse =
+                        EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
+                List<Match> savedMatches = matchService.saveAll(matches);
+                eventProcessNetworkResponse.setMatches(savedMatches);
+                return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponse);
+            } else {
+                eventProcessNetwork.setMatched(false);
+                eventProcessNetworkResponse =
+                        EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
+                eventProcessNetworkResponse.setMatches(matches);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eventProcessNetworkResponse);
+            }
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Event process network commit id must be unique.");
         } catch (Exception exception) {
@@ -72,31 +69,66 @@ public class MatchController {
         }
     }
 
-    @PostMapping("/find/epn_to_node")
-    public ResponseEntity<Object> find(@RequestBody NodeRequest node) {
-        EventProcessNetworkResponse eventProcessNetworkResponse = new EventProcessNetworkResponse();
+    @PostMapping("/find/epns_to_node")
+    public ResponseEntity<Object> find(@RequestBody NodeRequest nodeRequest) {
         try {
-            //get all matches of the node
-            List<Match> matches = matchService.findAllByNodeUuid(node.getUuid());
-            matches.forEach(match -> {
+            taggerService.putTagsInObject(nodeRequest);
+            List<EventProcessNetworkResponse> eventProcessNetworkResponses = new ArrayList<>();
+
+            List<Match> matchesOfNode = matchService.findAllByNodeUuid(nodeRequest.getUuid());
+
+            matchesOfNode.forEach(match -> {
                 Rule rule = match.getRule();
+                List<Node> nodes = findMatchingNodesToRule(rule);
 
-                //get all nodes that match the rule tag expression
-                List<TaggedObjectResponse> taggedObjects = Arrays.asList(taggerService.getTaggedObjectByTagExpression(rule.getTagFilter()));
-                List<Node> nodes = taggedObjects.stream().map(TaggedObjectResponse::toNode).toList();
+                boolean unMatched = true;
+                for (Node node : nodes) {
+                    if (node.getUuid().equals(nodeRequest.getUuid())) {
+                        unMatched = false;
+                        break;
+                    }
+                }
 
-                if (!nodes.contains(node.toEntity())) {
-                    eventProcessNetworkResponse.setMatched(false);
+                if (unMatched) {
+                    EventProcessNetwork eventProcessNetwork = rule.getEventProcessNetwork();
+                    eventProcessNetwork.setMatched(false);
+                    List<Match> matches = matchService.findAllByEventProcessNetworkUuid(eventProcessNetwork.getUuid());
+                    matches.forEach(matchService::delete);
+                    eventProcessNetworkService.save(eventProcessNetwork);
+                    EventProcessNetworkResponse eventProcessNetworkResponse =
+                            EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
+                    eventProcessNetworkResponse.setMatches(new ArrayList<>());
+                    eventProcessNetworkResponses.add(eventProcessNetworkResponse);
                 }
             });
 
-            return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponse);
+            //FIND ALL EPNS THAT ARE NOT MATCHED, AND FIND MATCHES FOR EACH ONE
+            List<EventProcessNetwork> eventProcessNetworks = eventProcessNetworkService.findAllByMatched(false);
+
+            for (EventProcessNetwork eventProcessNetwork : eventProcessNetworks) {
+                List<Match> matches = findMatchesToEventProcessNetwork(eventProcessNetwork);
+
+                if (!matches.isEmpty()) {
+                    eventProcessNetwork.setMatched(true);
+                    EventProcessNetworkResponse eventProcessNetworkResponse =
+                            EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
+                    List<Match> savedMatches = matchService.saveAll(matches);
+                    eventProcessNetworkResponse.setMatches(savedMatches);
+                    eventProcessNetworkResponses.add(eventProcessNetworkResponse);
+                }
+            }
+
+            if (eventProcessNetworkResponses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No event process networks found.");
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponses);
         } catch (TaggerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(eventProcessNetworkResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sorry! Something went wrong.\n" + e.getMessage());
         }
     }
 
-    public Node findMatchingNodeToRule(Rule rule) throws MatchNotFoundException {
+    public List<Node> findMatchingNodesToRule(Rule rule) throws MatchNotFoundException {
         String tagExpression = rule.getTagFilter();
         TaggedObjectResponse[] taggedObjects = taggerService.getTaggedObjectByTagExpression(tagExpression);
 
@@ -106,29 +138,24 @@ public class MatchController {
                 .toArray(TaggedObjectResponse[]::new);
 
         if (taggedObjects.length == 0)
-            throw new MatchNotFoundException("No matching objects found for rule: " + rule.getName());
+            return new ArrayList<>();
 
-        List<Node> nodes = Arrays.stream(taggedObjects)
+        return Arrays.stream(taggedObjects)
                 .map(TaggedObjectResponse::toNode)
                 .toList();
-
-        return nodes.get(0);
     }
 
-//    public String revalidateNode(@RequestBody Node node) {
-//        List<Match> match = matchService.findAllByNodeUuid(node.getUuid());
-//
-//        if (match.isEmpty())
-//            return
-//
-//        Match matchFound = match.get();
-//        Rule ruleFound = matchFound.getRule();
-//        try {
-//            Rule rule = cdpoService.getRuleByUuid(ruleFound.getUuid());
-//
-//            return rule.toString();
-//        } catch (TaggerException e) {
-//            return e.getMessage();
-//        }
-//    }
+    public List<Match> findMatchesToEventProcessNetwork(EventProcessNetwork eventProcessNetwork) {
+        List<Match> matches = new ArrayList<>();
+        List<Rule> rules = eventProcessNetwork.getRules();
+        AtomicBoolean isMatched = new AtomicBoolean(true);
+
+        rules.forEach(rule -> {
+            List<Node> nodes = findMatchingNodesToRule(rule);
+            if (nodes.isEmpty()) isMatched.set(false);
+            else {matches.add(new Match(rule, nodes.get(0), true));}
+        });
+
+        return isMatched.get() ? matches : new ArrayList<>();
+    }
 }
