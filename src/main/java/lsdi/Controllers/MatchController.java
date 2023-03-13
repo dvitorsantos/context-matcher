@@ -1,15 +1,11 @@
 package lsdi.Controllers;
 
-import lsdi.Constants.ObjectTypes;
 import lsdi.DataTransferObjects.EventProcessNetworkRequest;
 import lsdi.DataTransferObjects.EventProcessNetworkResponse;
 import lsdi.DataTransferObjects.NodeRequest;
-import lsdi.DataTransferObjects.TaggedObjectResponse;
 import lsdi.Entities.EventProcessNetwork;
 import lsdi.Entities.Match;
-import lsdi.Entities.Node;
 import lsdi.Entities.Rule;
-import lsdi.Exceptions.MatchNotFoundException;
 import lsdi.Exceptions.TaggerException;
 import lsdi.Connector.CDPOConnector;
 import lsdi.Services.EventProcessNetworkService;
@@ -23,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("/match")
@@ -43,20 +38,19 @@ public class MatchController {
     @PostMapping("/find/nodes_to_epn")
     public ResponseEntity<Object> find(@RequestBody EventProcessNetworkRequest epn) {
         try {
-            EventProcessNetworkResponse eventProcessNetworkResponse = new EventProcessNetworkResponse();
             EventProcessNetwork eventProcessNetwork = epn.toEntity();
             List<Match> matches = matchService.findMatchesToEventProcessNetwork(eventProcessNetwork);
-
             if (!matches.isEmpty()) {
                 eventProcessNetwork.setMatched(true);
-                eventProcessNetworkResponse =
+                EventProcessNetworkResponse eventProcessNetworkResponse =
                         EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
+                System.out.println(eventProcessNetworkResponse);
                 List<Match> savedMatches = matchService.saveAll(matches);
                 eventProcessNetworkResponse.setMatches(savedMatches);
                 return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponse);
             } else {
                 eventProcessNetwork.setMatched(false);
-                eventProcessNetworkResponse =
+                EventProcessNetworkResponse eventProcessNetworkResponse =
                         EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
                 eventProcessNetworkResponse.setMatches(matches);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eventProcessNetworkResponse);
@@ -64,6 +58,7 @@ public class MatchController {
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Event process network commit id must be unique.");
         } catch (Exception exception) {
+            exception.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sorry! Something went wrong.");
         }
     }
@@ -109,8 +104,9 @@ public class MatchController {
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponses);
-        } catch (TaggerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sorry! Something went wrong.\n" + e.getMessage());
+        } catch (TaggerException exception) {
+            exception.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sorry! Something went wrong.\n" + exception.getMessage());
         }
     }
 }

@@ -27,7 +27,7 @@ public class EventProcessNetworkService {
     }
 
     public List<EventProcessNetwork> findAllByNode(String nodeUuid) {
-        return eventProcessNetworkRepository.findAllByNode(nodeUuid);
+        return eventProcessNetworkRepository.findAllByHost(nodeUuid);
     }
     public EventProcessNetwork save(EventProcessNetwork eventProcessNetwork) {
         List<Rule> rules = eventProcessNetwork.getRules();

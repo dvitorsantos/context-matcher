@@ -29,11 +29,9 @@ public class EventProcessNetwork {
     @OneToMany(mappedBy = "eventProcessNetwork", cascade = CascadeType.ALL)
     private List<Rule> rules;
 
-    public EventProcessNetwork(String commitId, String version, String startTime, String endTime, Boolean enabled, String qos, Boolean atomic, List<Rule> rules) {
+    public EventProcessNetwork(String commitId, String version, Boolean enabled, String qos, Boolean atomic, List<Rule> rules) {
         this.commitId = commitId;
         this.version = version;
-        this.startTime = startTime;
-        this.endTime = endTime;
         this.enabled = enabled;
         this.qos = qos;
         this.atomic = atomic;

@@ -7,13 +7,10 @@ import lsdi.Entities.EventProcessNetwork;
 import lsdi.Entities.Match;
 import lsdi.Entities.Node;
 import lsdi.Entities.Rule;
-import lsdi.Exceptions.MatchNotFoundException;
 import lsdi.Repositories.MatchRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +27,8 @@ public class MatchService {
         return this.matchRepository.save(match);
     }
 
-    public List<Match> findAllByNodeUuid(String nodeUuid) {
-        return this.matchRepository.findAllByNode(nodeUuid);
+    public List<Match> findAllByNodeUuid(String hostUuid) {
+        return this.matchRepository.findAllByHost(hostUuid);
     }
 
     public List<Match> findAllByEventProcessNetworkUuid(String eventProcessNetworkUuid) {
@@ -52,10 +49,10 @@ public class MatchService {
 
         return nodes.stream()
                 .map(Node::getUuid)
-                .anyMatch(uuid -> uuid.equals(match.getNode()));
+                .anyMatch(uuid -> uuid.equals(match.getHost()));
     }
 
-    public List<Node> findMatchingNodesToRule(Rule rule) throws MatchNotFoundException {
+    public List<Node> findMatchingNodesToRule(Rule rule) {
         String tagExpression = rule.getTagFilter();
         TaggedObjectResponse[] taggedObjects = taggerConnector.getTaggedObjectByTagExpression(tagExpression);
 
@@ -82,7 +79,6 @@ public class MatchService {
                 return Collections.emptyList();
             else
                 matches.add(new Match(rule, nodes.get(0), true));
-
         }
 
         return matches;

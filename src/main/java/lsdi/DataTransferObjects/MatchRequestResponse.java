@@ -8,17 +8,17 @@ import lsdi.Entities.Match;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MatchFlat {
+public class MatchRequestResponse {
     public String uuid;
     public String ruleUuid;
-    public String nodeUuid;
+    public String hostUuid;
     public Boolean status;
 
-    public static MatchFlat fromMatch(Match match) {
-        return new MatchFlat(
+    public static MatchRequestResponse fromEntity(Match match) {
+        return new MatchRequestResponse(
                 match.getUuid(),
                 match.getRule().getUuid(),
-                match.getNode(),
+                match.getHost(),
                 match.getStatus()
         );
     }

@@ -14,6 +14,6 @@ public interface EventProcessNetworkRepository extends JpaRepository<EventProces
 
     @Query("SELECT epn FROM EventProcessNetwork epn " +
             "JOIN Rule rule ON epn.uuid = rule.eventProcessNetwork.uuid " +
-            "JOIN Match match ON rule.uuid = match.rule.uuid WHERE match.node = ?1")
-    List<EventProcessNetwork> findAllByNode(String nodeUuid);
+            "JOIN Match match ON rule.uuid = match.rule.uuid WHERE match.host = ?1")
+    List<EventProcessNetwork> findAllByHost(String nodeUuid);
 }

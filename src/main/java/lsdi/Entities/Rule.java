@@ -1,7 +1,10 @@
 package lsdi.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -20,4 +23,6 @@ public class Rule {
     private String qos;
     @ManyToOne
     private EventProcessNetwork eventProcessNetwork;
+    @OneToMany(mappedBy = "rule", cascade = CascadeType.ALL)
+    private List<EventType> eventType;
 }

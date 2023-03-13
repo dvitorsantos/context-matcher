@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface MatchRepository extends JpaRepository<Match, Long> {
-    List<Match> findAllByNode(String nodeUuid);
+    List<Match> findAllByHost(String hostUuid);
 
     @Query("SELECT match FROM Match match " +
             "JOIN Rule rule ON match.rule.uuid = rule.uuid " +
