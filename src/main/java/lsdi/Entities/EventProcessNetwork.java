@@ -20,8 +20,6 @@ public class EventProcessNetwork {
     @Column(unique = true)
     private String commitId;
     private String version;
-    private String startTime;
-    private String endTime;
     private Boolean enabled;
     private Boolean matched;
     private String qos;
