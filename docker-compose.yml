@@ -1,15 +1,27 @@
-version: '3.8'
+version: "3"
 services:
-  context-matcher-database:
+  database:
     image: postgres:latest
     network_mode: bridge
-    container_name: context-matcher-database
+    container_name: database
     expose:
-      - 5439
+      - 5432
     ports:
-      - "5439:5432"
+      - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=context-matcher
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=contextmatcher
     restart: unless-stopped
+  context-matcher:
+    build: .
+    container_name: context-matcher
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - database
+    links:
+      - database
