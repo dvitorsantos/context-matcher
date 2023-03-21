@@ -18,7 +18,7 @@ public class TaggerConnector {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String getUrl() {
-        return this.url;
+        return "http://tagger:8080/tagger";
     }
 
     public TaggedObjectResponse[] getAllTaggedObjects() throws TaggerException {

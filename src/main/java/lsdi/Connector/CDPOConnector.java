@@ -12,7 +12,7 @@ public class CDPOConnector {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String getUrl() {
-        return this.url;
+        return "http://cdpo:8080";
     }
 
     public Rule getRuleByUuid(String uuid) {
