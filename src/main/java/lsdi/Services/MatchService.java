@@ -5,7 +5,7 @@ import lsdi.Constants.ObjectTypes;
 import lsdi.DataTransferObjects.TaggedObjectResponse;
 import lsdi.Entities.EventProcessNetwork;
 import lsdi.Entities.Match;
-import lsdi.Entities.Node;
+import lsdi.Models.Node;
 import lsdi.Entities.Rule;
 import lsdi.Repositories.MatchRepository;
 import org.springframework.stereotype.Service;

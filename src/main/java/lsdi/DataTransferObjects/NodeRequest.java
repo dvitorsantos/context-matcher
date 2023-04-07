@@ -1,10 +1,9 @@
 package lsdi.DataTransferObjects;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lsdi.Entities.Node;
+import lsdi.Models.Node;
 
 import java.util.Map;
 

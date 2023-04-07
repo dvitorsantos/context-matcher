@@ -2,10 +2,11 @@ package lsdi.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lsdi.Models.Node;
 
+@Entity
 @Data
 @RequiredArgsConstructor
-@Entity
 public class Match {
     public Match(Rule rule, Node node, Boolean status) {
         this.rule = rule;

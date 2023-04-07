@@ -1,7 +1,7 @@
 package lsdi.DataTransferObjects;
 
 import lombok.Data;
-import lsdi.Entities.Node;
+import lsdi.Models.Node;
 
 import java.util.Map;
 
