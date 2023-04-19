@@ -2,13 +2,16 @@ package lsdi.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lsdi.Enums.MatchStatus;
 import lsdi.Models.Node;
+
+import javax.print.attribute.standard.JobState;
 
 @Entity
 @Data
 @RequiredArgsConstructor
 public class Match {
-    public Match(Rule rule, Node node, Boolean status) {
+    public Match(Rule rule, Node node, MatchStatus status) {
         this.rule = rule;
         this.host = node == null ? null : node.getUuid();
         this.status = status;
@@ -16,11 +19,10 @@ public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
-    @ManyToOne
-    @JoinColumn(name = "rule_uuid")
+    @OneToOne(fetch = FetchType.LAZY)
     private Rule rule;
     @Column(name = "host_uuid")
     private String host;
     @Column(name = "status")
-    private Boolean status;
+    private MatchStatus status;
 }

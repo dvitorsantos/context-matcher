@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Performace {
-    private String cpu;
-    private String memory;
+    private Double cpu;
+    private Double memory;
 }

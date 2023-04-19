@@ -1,6 +1,5 @@
 package lsdi.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +20,13 @@ public class Rule {
     private String target;
     private String definition;
     private String qos;
+    private String webhookUrl;
     @ManyToOne
     private EventProcessNetwork eventProcessNetwork;
     @OneToMany(mappedBy = "rule", cascade = CascadeType.ALL)
     private List<EventType> eventType;
+    @OneToOne(mappedBy = "rule", cascade = CascadeType.ALL)
+    private Match match;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Requirements requirements;
 }
