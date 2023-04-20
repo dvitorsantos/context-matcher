@@ -37,18 +37,16 @@ public class ContextController {
                    cdpoService.deployRule(rule.getUuid());
                    match.setStatus(MatchStatus.MATCHED);
                    matchService.save(match);
-                   System.out.println("Rule " + rule.getName() + " deployed.");
                }
            } else {
                if (match.getStatus().equals(MatchStatus.MATCHED)) {
                    cdpoService.undeployRule(rule.getUuid());
                    match.setStatus(MatchStatus.UNMATCHED);
                    matchService.save(match);
-                     System.out.println("Rule " + rule.getName() + " undeployed.");
                }
            }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("See logs for more information.");
+        return ResponseEntity.status(HttpStatus.OK).body("Context data received.");
     }
 }
