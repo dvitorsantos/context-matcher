@@ -19,4 +19,14 @@ public class CDPOConnector {
         String requestUrl = this.getUrl() + "/rules/" + uuid;
         return restTemplate.getForObject(requestUrl, Rule.class);
     }
+
+    public void deployRule(String uuid) {
+        String requestUrl = this.getUrl() + "/deploy/rule/" + uuid;
+        restTemplate.postForObject(requestUrl, null, String.class);
+    }
+
+    public void undeployRule(String uuid) {
+        String requestUrl = this.getUrl() + "/undeploy/rule/" + uuid;
+        restTemplate.postForObject(requestUrl, null, String.class);
+    }
 }

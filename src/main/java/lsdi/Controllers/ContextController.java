@@ -1,5 +1,6 @@
 package lsdi.Controllers;
 
+import lsdi.Connector.CDPOConnector;
 import lsdi.DataTransferObjects.ContextDataRequest;
 import lsdi.Entities.Match;
 import lsdi.Entities.Requirements;
@@ -22,25 +23,32 @@ public class ContextController {
     @Autowired
     MatchService matchService;
 
+    @Autowired
+    CDPOConnector cdpoService;
+
     @PostMapping("/new")
     public ResponseEntity<Object> newContext(@RequestBody ContextDataRequest contextData) {
         List<Match> matches = matchService.findAllByNodeUuid(contextData.getHostUuid());
 
         for (Match match : matches) {
-           Requirements requirements = match.getRule().getRequirements();
-           if (contextData.getLocation().isInArea(requirements.getLocationArea())) {
+            Rule rule = match.getRule();
+           if (contextData.getLocation().isInArea(rule.getRequirements().getLocationArea())) {
                if (match.getStatus().equals(MatchStatus.UNMATCHED)) {
-                   //send request to deploy rule
+                   cdpoService.deployRule(rule.getUuid());
                    match.setStatus(MatchStatus.MATCHED);
+                   matchService.save(match);
+                   System.out.println("Rule " + rule.getName() + " deployed.");
                }
            } else {
                if (match.getStatus().equals(MatchStatus.MATCHED)) {
-                   //send request to undeploy rule
+                   cdpoService.undeployRule(rule.getUuid());
                    match.setStatus(MatchStatus.UNMATCHED);
+                   matchService.save(match);
+                     System.out.println("Rule " + rule.getName() + " undeployed.");
                }
            }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("OK");
+        return ResponseEntity.status(HttpStatus.OK).body("See logs for more information.");
     }
 }
