@@ -34,13 +34,13 @@ public class ContextController {
             Rule rule = match.getRule();
            if (contextData.getLocation().isInArea(rule.getRequirements().getLocationArea())) {
                if (match.getStatus().equals(MatchStatus.UNMATCHED)) {
-                   cdpoService.deployRule(rule.getUuid());
+                   cdpoService.deployRule(match.getHost(), rule.getUuid());
                    match.setStatus(MatchStatus.MATCHED);
                    matchService.save(match);
                }
            } else {
                if (match.getStatus().equals(MatchStatus.MATCHED)) {
-                   cdpoService.undeployRule(rule.getUuid());
+                   cdpoService.undeployRule(match.getHost(), rule.getUuid());
                    match.setStatus(MatchStatus.UNMATCHED);
                    matchService.save(match);
                }

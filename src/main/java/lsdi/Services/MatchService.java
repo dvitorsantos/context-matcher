@@ -79,13 +79,14 @@ public class MatchService {
             if (nodes.isEmpty())
                 return Collections.emptyList();
             else {
-                Match match = new Match(rule, nodes.get(0), MatchStatus.MATCHED);
+                for (Node node : nodes) {
+                    Match match = new Match(rule, node, MatchStatus.MATCHED);
+                    matches.add(match);
+                }
 
                 //sem isso, dá erro de recursão infinita
                 rule.getRequirements().setRule(null);
                 rule.getRequirements().getLocationArea().setRequirements(null);
-
-                matches.add(match);
             }
         }
 

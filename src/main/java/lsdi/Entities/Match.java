@@ -20,6 +20,7 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rule_uuid")
     private Rule rule;
     @Column(name = "host_uuid")
     private String host;
