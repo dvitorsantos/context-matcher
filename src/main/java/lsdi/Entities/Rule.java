@@ -2,6 +2,7 @@ package lsdi.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class Rule {
     private List<EventType> eventType;
     @OneToOne(mappedBy = "rule", cascade = CascadeType.ALL)
     private Match match;
+    @Nullable
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Requirements requirements;
 }

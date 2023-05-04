@@ -30,6 +30,7 @@ public class RuleRequestResponse {
     String eventType;
     @JsonProperty("event_attributes")
     Map<String, String> eventAttributes;
+    @Nullable
     RequirementsRequestResponse requirements;
 
     public RuleRequestResponse(String uuid, String name, String description, String tagFilter, String level, String target, String definition, String qos) {
@@ -43,7 +44,7 @@ public class RuleRequestResponse {
         this.qos = qos;
     }
 
-    public Rule toEntity(){
+    public Rule toEntity() {
         Rule rule = new Rule();
         rule.setUuid(this.uuid);
         rule.setName(this.name);
@@ -53,8 +54,6 @@ public class RuleRequestResponse {
         rule.setTarget(this.target);
         rule.setDefinition(this.definition);
         rule.setQos(this.qos);
-
-
 
         //event type and event attributes
         EventType eventType = new EventType();
@@ -72,12 +71,16 @@ public class RuleRequestResponse {
         rule.setEventType(List.of(eventType));
 
         //requirements
-        Requirements requirements = this.requirements.toEntity();
-        LocationArea locationArea = this.requirements.getLocationArea().toEntity();
-        locationArea.setRequirements(requirements);
-        requirements.setLocationArea(locationArea);
+        Requirements requirements = null;
 
-        requirements.setRule(rule);
+        if (this.requirements != null) {
+            requirements = this.requirements.toEntity();
+            LocationArea locationArea = this.requirements.getLocationArea().toEntity();
+            locationArea.setRequirements(requirements);
+            requirements.setLocationArea(locationArea);
+            if (this.requirements != null) requirements.setRule(rule);
+        }
+
         rule.setRequirements(requirements);
 
         return rule;
@@ -101,7 +104,7 @@ public class RuleRequestResponse {
                 rule.getQos(),
                 rule.getEventType().get(0).getName(),
                 eventAttributes,
-                RequirementsRequestResponse.fromEntity(rule.getRequirements())
+                rule.getRequirements() != null ? RequirementsRequestResponse.fromEntity(rule.getRequirements()) : null
         );
     }
 }

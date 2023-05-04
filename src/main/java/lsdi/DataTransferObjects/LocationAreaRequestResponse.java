@@ -6,12 +6,12 @@ import lsdi.Entities.LocationArea;
 
 @Data
 public class LocationAreaRequestResponse {
-    private Double area;
+    private Double radius;
     private Double latitude;
     private Double longitude;
     public static LocationAreaRequestResponse fromEntity(LocationArea locationArea) {
         LocationAreaRequestResponse locationAreaRequestResponse = new LocationAreaRequestResponse();
-        locationAreaRequestResponse.setArea(locationArea.getArea());
+        locationAreaRequestResponse.setRadius(locationArea.getRadius());
         locationAreaRequestResponse.setLatitude(locationArea.getLatitude());
         locationAreaRequestResponse.setLongitude(locationArea.getLongitude());
         return locationAreaRequestResponse;
@@ -19,7 +19,7 @@ public class LocationAreaRequestResponse {
 
     public LocationArea toEntity() {
         LocationArea locationArea = new LocationArea();
-        locationArea.setArea(this.getArea());
+        locationArea.setRadius(this.getRadius());
         locationArea.setLatitude(this.getLatitude());
         locationArea.setLongitude(this.getLongitude());
         return locationArea;

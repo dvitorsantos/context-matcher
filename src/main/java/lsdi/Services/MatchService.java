@@ -85,8 +85,10 @@ public class MatchService {
                 }
 
                 //sem isso, dá erro de recursão infinita
-                rule.getRequirements().setRule(null);
-                rule.getRequirements().getLocationArea().setRequirements(null);
+                if (rule.getRequirements() != null) {
+                    rule.getRequirements().setRule(null);
+                    rule.getRequirements().getLocationArea().setRequirements(null);
+                }
             }
         }
 

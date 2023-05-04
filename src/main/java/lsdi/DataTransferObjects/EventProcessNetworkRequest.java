@@ -33,7 +33,8 @@ public class EventProcessNetworkRequest {
                 this.enabled,
                 this.qos,
                 this.atomic,
-                epnRules);
+                epnRules,
+                this.webhookUrl);
         epnRules.forEach(rule -> rule.setEventProcessNetwork(epn));
         return epn;
     }
