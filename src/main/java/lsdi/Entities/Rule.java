@@ -26,6 +26,7 @@ public class Rule {
     private EventProcessNetwork eventProcessNetwork;
     @OneToMany(mappedBy = "rule", cascade = CascadeType.ALL)
     private List<EventType> eventType;
+    private String outputEventType;
     @OneToOne(mappedBy = "rule", cascade = CascadeType.ALL)
     private Match match;
     @Nullable

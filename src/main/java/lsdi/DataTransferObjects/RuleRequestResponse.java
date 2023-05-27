@@ -30,6 +30,7 @@ public class RuleRequestResponse {
     String eventType;
     @JsonProperty("event_attributes")
     Map<String, String> eventAttributes;
+    String outputEventType;
     @Nullable
     RequirementsRequestResponse requirements;
 
@@ -54,6 +55,7 @@ public class RuleRequestResponse {
         rule.setTarget(this.target);
         rule.setDefinition(this.definition);
         rule.setQos(this.qos);
+        rule.setOutputEventType(this.outputEventType);
 
         //event type and event attributes
         EventType eventType = new EventType();
@@ -104,6 +106,7 @@ public class RuleRequestResponse {
                 rule.getQos(),
                 rule.getEventType().get(0).getName(),
                 eventAttributes,
+                rule.getOutputEventType(),
                 rule.getRequirements() != null ? RequirementsRequestResponse.fromEntity(rule.getRequirements()) : null
         );
     }

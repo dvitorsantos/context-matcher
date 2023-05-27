@@ -10,6 +10,5 @@ import java.time.LocalDateTime;
 public class ContextDataRequest {
     private String hostUuid;
     private Location location;
-    private Performace performace;
     private LocalDateTime timestamp;
 }
