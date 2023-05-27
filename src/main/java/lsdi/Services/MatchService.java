@@ -5,7 +5,8 @@ import lsdi.Constants.ObjectTypes;
 import lsdi.DataTransferObjects.TaggedObjectResponse;
 import lsdi.Entities.EventProcessNetwork;
 import lsdi.Entities.Match;
-import lsdi.Entities.Node;
+import lsdi.Enums.MatchStatus;
+import lsdi.Models.Node;
 import lsdi.Entities.Rule;
 import lsdi.Repositories.MatchRepository;
 import org.springframework.stereotype.Service;
@@ -77,8 +78,18 @@ public class MatchService {
             List<Node> nodes = findMatchingNodesToRule(rule);
             if (nodes.isEmpty())
                 return Collections.emptyList();
-            else
-                matches.add(new Match(rule, nodes.get(0), true));
+            else {
+                for (Node node : nodes) {
+                    Match match = new Match(rule, node, MatchStatus.MATCHED);
+                    matches.add(match);
+                }
+
+                //sem isso, dá erro de recursão infinita
+                if (rule.getRequirements() != null) {
+                    rule.getRequirements().setRule(null);
+                    rule.getRequirements().getLocationArea().setRequirements(null);
+                }
+            }
         }
 
         return matches;

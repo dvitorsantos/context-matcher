@@ -1,18 +1,14 @@
 package lsdi.DataTransferObjects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lsdi.Entities.EventProcessNetwork;
-import lsdi.Entities.Node;
 import lsdi.Entities.Rule;
+import org.springframework.lang.Nullable;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -25,14 +21,21 @@ public class EventProcessNetworkRequest {
     private String qos;
     private Boolean atomic;
     private List<RuleRequestResponse> rules;
+    @Nullable
+    @JsonProperty("webhook_url")
+    String webhookUrl;
 
     public EventProcessNetwork toEntity() {
-        return new EventProcessNetwork(
+        List<Rule> epnRules = rules.stream().map(RuleRequestResponse::toEntity).toList();
+        EventProcessNetwork epn = new EventProcessNetwork(
                 this.commitId,
                 this.version,
                 this.enabled,
                 this.qos,
                 this.atomic,
-                rules.stream().map(RuleRequestResponse::toEntity).toList());
+                epnRules,
+                this.webhookUrl);
+        epnRules.forEach(rule -> rule.setEventProcessNetwork(epn));
+        return epn;
     }
 }

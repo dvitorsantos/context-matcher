@@ -38,20 +38,17 @@ public class MatchController {
     @PostMapping("/find/nodes_to_epn")
     public ResponseEntity<Object> find(@RequestBody EventProcessNetworkRequest epn) {
         try {
-            EventProcessNetwork eventProcessNetwork = epn.toEntity();
+            EventProcessNetwork eventProcessNetwork = eventProcessNetworkService.save(epn.toEntity());
+            EventProcessNetworkResponse eventProcessNetworkResponse =
+                    EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetwork);
             List<Match> matches = matchService.findMatchesToEventProcessNetwork(eventProcessNetwork);
             if (!matches.isEmpty()) {
                 eventProcessNetwork.setMatched(true);
-                EventProcessNetworkResponse eventProcessNetworkResponse =
-                        EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
-                System.out.println(eventProcessNetworkResponse);
                 List<Match> savedMatches = matchService.saveAll(matches);
                 eventProcessNetworkResponse.setMatches(savedMatches);
                 return ResponseEntity.status(HttpStatus.OK).body(eventProcessNetworkResponse);
             } else {
                 eventProcessNetwork.setMatched(false);
-                EventProcessNetworkResponse eventProcessNetworkResponse =
-                        EventProcessNetworkResponse.fromEventProcessNetwork(eventProcessNetworkService.save(eventProcessNetwork));
                 eventProcessNetworkResponse.setMatches(matches);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eventProcessNetworkResponse);
             }

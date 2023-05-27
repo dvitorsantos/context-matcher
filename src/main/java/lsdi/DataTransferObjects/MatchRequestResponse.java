@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lsdi.Entities.Match;
+import lsdi.Enums.MatchStatus;
 
 @Data
 @AllArgsConstructor
@@ -12,7 +13,7 @@ public class MatchRequestResponse {
     public String uuid;
     public String ruleUuid;
     public String hostUuid;
-    public Boolean status;
+    public MatchStatus status;
 
     public static MatchRequestResponse fromEntity(Match match) {
         return new MatchRequestResponse(

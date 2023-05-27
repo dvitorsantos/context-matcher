@@ -26,13 +26,15 @@ public class EventProcessNetwork {
     private Boolean atomic;
     @OneToMany(mappedBy = "eventProcessNetwork", cascade = CascadeType.ALL)
     private List<Rule> rules;
+    private String webhookUrl;
 
-    public EventProcessNetwork(String commitId, String version, Boolean enabled, String qos, Boolean atomic, List<Rule> rules) {
+    public EventProcessNetwork(String commitId, String version, Boolean enabled, String qos, Boolean atomic, List<Rule> rules, String webhookUrl) {
         this.commitId = commitId;
         this.version = version;
         this.enabled = enabled;
         this.qos = qos;
         this.atomic = atomic;
         this.rules = rules;
+        this.webhookUrl = webhookUrl;
     }
 }

@@ -5,6 +5,7 @@ import lsdi.DataTransferObjects.TagExpressionRequest;
 import lsdi.DataTransferObjects.TaggedObjectResponse;
 
 import lsdi.Exceptions.TaggerException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,11 +13,12 @@ import java.util.Optional;
 
 @Service
 public class TaggerConnector {
-    private final String url = "http://localhost:8180/tagger";
+    @Value("${tagger.url}")
+    private String url;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String getUrl() {
-        return this.url;
+        return "http://tagger:8080/tagger";
     }
 
     public TaggedObjectResponse[] getAllTaggedObjects() throws TaggerException {

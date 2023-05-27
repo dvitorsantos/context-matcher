@@ -1,4 +1,4 @@
-package lsdi.Entities;
+package lsdi.Models;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;

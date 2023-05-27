@@ -30,8 +30,6 @@ public class EventProcessNetworkService {
         return eventProcessNetworkRepository.findAllByHost(nodeUuid);
     }
     public EventProcessNetwork save(EventProcessNetwork eventProcessNetwork) {
-        List<Rule> rules = eventProcessNetwork.getRules();
-        rules.forEach(rule -> rule.setEventProcessNetwork(eventProcessNetwork));
         return eventProcessNetworkRepository.save(eventProcessNetwork);
     }
 }

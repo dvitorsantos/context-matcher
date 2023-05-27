@@ -1,6 +1,7 @@
 package lsdi.DataTransferObjects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lsdi.Entities.EventProcessNetwork;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class EventProcessNetworkResponse {
     private String uuid;
@@ -23,8 +25,10 @@ public class EventProcessNetworkResponse {
     private Boolean atomic;
     private List<RuleRequestResponse> rules = new ArrayList<>();
     private List<MatchRequestResponse> matches = new ArrayList<>();
+    @JsonProperty("webhook_url")
+    private String webhookUrl;
 
-    public EventProcessNetworkResponse(String uuid, String commitId, String version, Boolean enabled, Boolean matched, String qos, Boolean atomic, List<Rule> rules) {
+    public EventProcessNetworkResponse(String uuid, String commitId, String version, Boolean enabled, Boolean matched, String qos, Boolean atomic, List<Rule> rules, String webhookUrl) {
         this.uuid = uuid;
         this.commitId = commitId;
         this.version = version;
@@ -33,6 +37,7 @@ public class EventProcessNetworkResponse {
         this.qos = qos;
         this.atomic = atomic;
         this.setRules(rules);
+        this.webhookUrl = webhookUrl;
     }
 
     public void setMatches(List<Match> matches) {
@@ -52,7 +57,8 @@ public class EventProcessNetworkResponse {
                 eventProcessNetwork.getMatched(),
                 eventProcessNetwork.getQos(),
                 eventProcessNetwork.getAtomic(),
-                eventProcessNetwork.getRules()
+                eventProcessNetwork.getRules(),
+                eventProcessNetwork.getWebhookUrl()
         );
     }
 }
