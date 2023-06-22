@@ -19,6 +19,7 @@ public class Rule {
     private String tagFilter;
     private String level;
     private String target;
+    @Column(length = 1000)
     private String definition;
     private String qos;
     private String webhookUrl;

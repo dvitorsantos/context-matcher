@@ -30,6 +30,7 @@ public class RuleRequestResponse {
     String eventType;
     @JsonProperty("event_attributes")
     Map<String, String> eventAttributes;
+    @JsonProperty("output_event_type")
     String outputEventType;
     @Nullable
     RequirementsRequestResponse requirements;
